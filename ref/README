@@ -1,0 +1,65 @@
+The camera sets of images are paired with their respective IMU set using
+the number in the filename.
+
+Hardware:
+
+- the gyros have dual output (1x and 4x). This is done by designers to
+  make the chips versatile in different operating conditions. If you
+  look at the schematic of the board, however, you see that only 4x gyro
+  signals are routed to the microcontroller (therefore you should use the 
+  appropriate sensitivity). In general, you can look at the schematic, and 
+  see which signals are connected to the microcontroller. 
+
+- make sure you convert sensitivity to mv/rad/sec (not degrees...)
+
+- the camera axis is aligned with imu x axis, the relative position of
+  the camera is roughly (0,0,0.1), i.e. 10cm just above the imu.
+
+Software:
+
+- if the final output of your Kalman filter does not look
+  reasonable, you should first double check that intermediate
+  computations look ok:
+  -- make sure you are using appropriate units (rad/sec vs. deg/sec)
+  -- try to apply just the motion model without fusing with
+  accelerometers and see if the behavior is reasonable within short
+  periods of time (it will drift over long periods, since no
+  corrections from accelerometers are incorporated, but that's ok)
+  -- check to make sure you are interpreting accelerometer data
+  correctly by projecting the accelerations from body frame into the
+  global frame using the vicon's rotation matrix. this should always
+  give you a vector that points down.
+
+Video:
+
+Don't worry about the image looking perfect, it is very difficult
+to do. We just want to check to make sure that you know how to use
+the resulting rotations in the context of fusing data coming from
+other sensors.
+
+Presentation:
+
+Your presentation should contain the following:
+
+- summary of your algorithm
+
+- plots comparing your estimated orientation to the ground truth
+  on training sets
+
+- short video (or sequence of matlab "rotplot"s to show how
+  vicon data compares to your estimate by drawing two boxes next
+  to each other with corresponding orientations.
+
+- at the beginning of class we will give you a link to the
+  test data set, which will be in the same format as the
+  training data (no images will be given, just imu data)
+
+Known Glitch:
+
+- Some imu data sets contained a small glitch in the 
+  beginning, where all 3 gyro values would jump to a fixed
+  value and then come back to normal operation (typically
+  several seconds after starting). This problem came during
+  data collection where a reset pin fired, locking the gyros
+  into the nominal zero, rather than the true zero bias gyro
+  level.
